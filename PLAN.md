@@ -1,44 +1,44 @@
-# Build plan — Venom Magnetic Button V2
+# Build plan — Venom Magnetic Button (Liquid Capture)
 
-## User-observed issues in V1
+## What the previous preview got wrong
 
-1. The magnetic influence area felt too small.
-2. Tendrils appeared to break; when the cursor moved away, they first fell toward a fixed lower fallback point and then reconnected/moved again.
-3. Motion felt generic and buggy rather than viscous and intentional.
+- The tendrils were too straight and uniform, like a handful of rigid cables.
+- The large ribbons overlapped into a single triangular wedge.
+- The connection looked too clean and lacked the irregular edge, wet shine, and hanging drips from the reference.
+- A hard fallback point could make the strands re-aim abruptly as the pointer moved through different areas.
 
-## Research-backed approach
+## Research and rendering choice
 
-- Use GSAP core `quickTo()` for repeatedly retargeted pointer-driven properties, rather than creating a new tween on every mouse event.
-- Use `gsap.ticker` for SVG geometry updates so the custom path animation stays synchronized with GSAP.
-- Use custom cubic Bézier paths and pointer-velocity-dependent control points for organic strands; a WebGL scene or MorphSVG dependency would add complexity without clear benefit for ~31 SVG paths.
-- Keep the magnet field broad and continuously weighted, instead of switching strands to a fabricated target when the cursor crosses one hard boundary.
+1. Use a thresholded SVG goo filter for the compact liquid mass nearest the button: blur the source, threshold its alpha with a color matrix, then displace the result with turbulence.
+2. Keep the long strands separate from the thresholded root mass. When all long ribbons pass through the same goo filter, they can merge into a single filled wedge instead of retaining distinct tendrils.
+3. Use multiple tapered Bézier ribbons plus fine curved filaments and add controlled turbulence-based displacement for an imperfect, viscous edge.
+4. Use GSAP `quickTo()` for retargetable easing; retain a requestAnimationFrame fallback so the page remains interactive if the external CDN is blocked.
+5. Keep this as SVG + GSAP rather than WebGL: the effect is one button and a relatively small number of paths, so a full GPU metaball renderer would add complexity without a clear benefit.
 
-References:
+Reference reading:
+- https://tympanus.net/codrops/2023/06/07/gooey-cursor-effect/
+- https://tympanus.net/codrops/2015/03/10/creative-gooey-effects/
 - https://gsap.com/docs/v3/GSAP/gsap.quickTo/
 - https://gsap.com/docs/v3/GSAP/gsap.ticker/
-- https://tympanus.net/codrops/2020/08/05/magnetic-buttons/
-- https://tympanus.net/codrops/2019/01/31/custom-cursor-effects/
+- https://github.com/sigco3111/interactive-metaballs
 
-## V2 implementation
+## V9 implementation
 
-1. Center the glossy black CTA on a warm textured background.
-2. Expand the magnetic radius to about 740 CSS pixels from the viewport centre.
-3. Use GSAP retargetable tweens for X/Y/rotation/scale and for the cursor endpoint.
-4. Anchor every strand to the button's ellipse edge on the side facing the pointer.
-5. Smooth cursor tracking independently from button tracking and add filtered velocity to strand curves.
-6. Remove the old hardcoded fallback target below the button. During release, keep the last real pointer coordinate while the strand opacity fades smoothly.
-7. Keep pointer/touch and reduced-motion behavior as explicit fallbacks.
-8. Keep the solution lightweight: GSAP core + native SVG, no WebGL/canvas renderer or paid plugin.
+- Centered glossy black pill on a warm paper backdrop, with a slightly angled pose.
+- A short goo-filtered root mass and uneven lobe details cling to the button edge.
+- Six narrow liquid ribbons, twenty-two fine filaments, and ten edge drips are animated independently.
+- Bézier control points react to time and filtered pointer velocity to avoid uniform parallel lines.
+- A hand-drawn cursor icon follows the eased pointer location. No artificial lower fallback endpoint is used.
+- The connection fades and the button returns to rest when the pointer leaves the viewport.
+- Includes touch/coarse-pointer and reduced-motion fallbacks.
 
-## Validation
+## Validation performed
 
-- [x] The inline JavaScript passes `node --check`.
-- [x] The new code removes the old fixed-bottom fallback endpoint.
-- [x] The GitHub repository has the V2 HTML and updated docs.
-- [ ] Manually test rapid top-to-bottom and diagonal pointer movement.
-- [ ] Manually test pointer exiting the viewport and immediately re-entering.
-- [ ] Confirm the visual intensity on desktop sizes and reduced-motion behavior.
+- [x] Extracted the inline JavaScript and passed it through `node --check`.
+- [x] Chromium/Playwright simulation at 1214 × 612: pointer at lower-left connection, pointer above the button, then a rapid diagonal change.
+- [x] No browser JavaScript exceptions in those simulated pointer tests.
+- [ ] Confirm GSAP's CDN-loaded path and motion preference on your regular internet-connected browser. The test container could not reach jsDelivr, so the fallback path was exercised in-browser.
 
-## Honest limitation
+## Limitations
 
-The code change has been syntax-checked, but the updated browser motion has not yet been visually confirmed in a live human-operated browser. A webpage cannot physically reposition a system cursor; the design creates the capture illusion visually.
+The effect is an illustrative “grab” illusion. Browser pages cannot physically move the operating system's pointer; the button moves and the drawn hand/tendrils track the cursor instead.
