@@ -3,362 +3,588 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#e7e4dd" />
-  <meta name="description" content="A smoother Venom-inspired magnetic button with animated ink tendrils." />
-  <title>Venom Magnetic Button — Interactive Experiment</title>
+  <meta name="theme-color" content="#e6e3dc" />
+  <meta name="description" content="A viscous, glossy magnetic button with gooey liquid tendrils and an illustrated hand cursor." />
+  <title>Venom Magnetic Button — Liquid Capture</title>
   <style>
     :root {
       color-scheme: light;
-      --paper: #e7e4dd;
-      --ink: #07080b;
-      --muted: #77736d;
-      --button-width: 318px;
-      --button-height: 106px;
+      --paper: #d3cfc6;
+      --ink: #050609;
+      --button-w: 320px;
+      --button-h: 104px;
     }
     * { box-sizing: border-box; }
     html, body { width: 100%; min-height: 100%; margin: 0; }
     body {
       min-height: 100svh;
       overflow: hidden;
-      background: radial-gradient(ellipse at 50% 47%, rgba(255,255,255,.33), transparent 58%), var(--paper);
+      background: var(--paper);
       color: var(--ink);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       -webkit-font-smoothing: antialiased;
-      user-select: none;
     }
-    .stage { position: relative; width: 100%; min-height: 100svh; overflow: hidden; isolation: isolate; }
-    .grain {
-      position: absolute; inset: -35%; z-index: -1; pointer-events: none; opacity: .14;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.86' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.24'/%3E%3C/svg%3E");
-      transform: rotate(-3deg);
+    .stage {
+      position: relative;
+      width: 100%;
+      height: 100svh;
+      min-height: 420px;
+      overflow: hidden;
+      isolation: isolate;
+      background:
+        radial-gradient(ellipse at 50% 45%, rgba(255,255,255,.25) 0, rgba(255,255,255,.08) 31%, transparent 67%),
+        linear-gradient(145deg, #d9d5cc 0%, #cdc9c0 100%);
     }
-    .topline {
-      position: absolute; z-index: 1; top: clamp(25px, 5.8vh, 58px); left: 50%;
-      width: max-content; max-width: calc(100vw - 32px); transform: translateX(-50%);
-      text-align: center; pointer-events: none;
+    .stage::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      inset: -40%;
+      pointer-events: none;
+      opacity: .105;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.36'/%3E%3C/svg%3E");
+      transform: rotate(-7deg);
     }
-    .eyebrow {
-      margin: 0 0 11px; color: #77736c; font: 600 10px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
-      letter-spacing: .2em; text-transform: uppercase;
-    }
-    .instruction { margin: 0; color: #5d5952; font-size: 12px; line-height: 1.6; letter-spacing: .015em; }
     .button-wrap {
-      position: absolute; left: 50%; top: 50%; z-index: 2; width: var(--button-width); height: var(--button-height);
-      transform: translate(-50%, -50%); pointer-events: none;
+      position: absolute;
+      z-index: 4;
+      left: 50%;
+      top: 50%;
+      width: var(--button-w);
+      height: var(--button-h);
+      transform: translate(-50%, -50%);
+      perspective: 900px;
     }
-    .venom-button {
-      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-      width: 100%; height: 100%; padding: 0 26px; overflow: hidden; border: 1px solid rgba(255,255,255,.18);
-      border-radius: 999px; background:
-        radial-gradient(ellipse at 22% 8%, rgba(255,255,255,.24), transparent 30%),
-        linear-gradient(158deg, rgba(255,255,255,.12) 0%, transparent 30%),
-        linear-gradient(180deg, #17181d 0%, #050609 52%, #111217 100%);
-      box-shadow: 0 25px 40px rgba(37,32,26,.2), 0 6px 13px rgba(20,18,16,.13),
-        inset 0 1px 1px rgba(255,255,255,.3), inset 0 -2px 5px rgba(0,0,0,.58);
-      color: #f6f6f4; cursor: pointer; pointer-events: auto; transform-origin: 50% 50%; will-change: transform;
-      -webkit-tap-highlight-color: transparent; isolation: isolate;
+    .cta {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      padding: 0 28px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: 999px;
+      color: #f4f4f2;
+      background:
+        radial-gradient(ellipse at 28% 2%, rgba(255,255,255,.25), transparent 37%),
+        radial-gradient(ellipse at 78% 0%, rgba(255,255,255,.11), transparent 42%),
+        linear-gradient(176deg, #303137 0%, #101115 26%, #030407 58%, #0b0c10 100%);
+      box-shadow:
+        0 24px 36px rgba(41,37,31,.23),
+        0 7px 13px rgba(32,29,24,.12),
+        inset 0 1.5px 1px rgba(255,255,255,.42),
+        inset 0 -2px 5px rgba(0,0,0,.8);
+      cursor: pointer;
+      transform: translate3d(0,0,0);
+      transform-origin: 50% 50%;
+      will-change: transform;
+      -webkit-tap-highlight-color: transparent;
+      isolation: isolate;
     }
-    .venom-button::before {
-      content: ""; position: absolute; pointer-events: none; inset: 1px; border-radius: inherit;
-      background: linear-gradient(180deg, rgba(255,255,255,.075), transparent 24%, transparent 80%, rgba(255,255,255,.018));
-    }
-    .venom-button::after {
-      content: ""; position: absolute; left: 10%; right: 10%; top: -65%; height: 105%; border-radius: 50%;
-      background: rgba(255,255,255,.08); filter: blur(21px); pointer-events: none;
-    }
-    .button-label {
-      position: relative; z-index: 1; display: inline-block; color: inherit; font-size: clamp(20px, 2.25vw, 25px);
-      font-weight: 650; letter-spacing: -.055em; line-height: 1; white-space: nowrap; text-shadow: 0 1px 2px rgba(0,0,0,.24);
+    .cta::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      left: 8%;
+      top: -72%;
+      width: 53%;
+      height: 112%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(255,255,255,.28), rgba(255,255,255,.035) 55%, transparent 78%);
+      filter: blur(10px);
+      transform: rotate(-14deg);
       pointer-events: none;
     }
-    .venom-button:focus-visible { outline: 2px solid #2f333b; outline-offset: 8px; }
-    .venom-button.is-pressed { box-shadow: 0 12px 22px rgba(37,32,26,.2), inset 0 2px 7px rgba(0,0,0,.6), inset 0 1px 1px rgba(255,255,255,.22); }
-    .tendrils {
-      position: absolute; inset: 0; z-index: 3; width: 100%; height: 100%; overflow: visible;
-      pointer-events: none; contain: layout style paint;
+    .cta::after {
+      content: "";
+      position: absolute;
+      inset: 1px;
+      border-radius: inherit;
+      border: 1px solid rgba(255,255,255,.055);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.09);
+      pointer-events: none;
     }
-    .tendril, .tendril-hair, .tendril-halo { fill: none; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
-    .tendril { stroke: url(#inkGradient); opacity: 0; }
-    .tendril-hair { stroke: #090a0d; opacity: 0; }
-    .tendril-halo { stroke: #090a0d; opacity: 0; filter: blur(2.6px); }
-    .status {
-      position: absolute; z-index: 1; bottom: clamp(28px, 6vh, 58px); left: 50%; display: inline-flex; align-items: center;
-      gap: 9px; transform: translateX(-50%); color: #77736d; font: 500 10px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace;
-      letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; pointer-events: none;
+    .cta-label {
+      position: relative;
+      z-index: 2;
+      color: #f5f5f3;
+      font-size: clamp(20px, 2.15vw, 23px);
+      font-weight: 650;
+      letter-spacing: -.052em;
+      line-height: 1;
+      white-space: nowrap;
+      text-shadow: 0 1px 2px rgba(0,0,0,.48);
+      user-select: none;
+      pointer-events: none;
     }
-    .status-dot { width: 5px; height: 5px; border-radius: 50%; background: #a09b91; transition: background .2s ease, box-shadow .2s ease; }
-    .stage.is-active .status-dot { background: #17191d; box-shadow: 0 0 0 4px rgba(8,9,12,.09); }
-    .signature {
-      position: absolute; z-index: 1; right: 22px; bottom: 19px; color: rgba(80,76,69,.57);
-      font: 500 9px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .06em; pointer-events: none;
+    .cta:focus-visible { outline: 2px solid #22242a; outline-offset: 8px; }
+    .liquid-scene {
+      position: absolute;
+      z-index: 5;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      pointer-events: none;
     }
+    .liquid-body { opacity: 0; }
+    .liquid-detail { opacity: 0; }
+    .hand-cursor { opacity: 0; transform-origin: 0 0; }
+    .stage.is-grabbed, .stage.is-grabbed * { cursor: none !important; }
+    .stage.is-grabbed .cta { cursor: none !important; }
     @media (max-width: 520px) {
-      :root { --button-width: min(318px, calc(100vw - 44px)); --button-height: 90px; }
-      .topline { top: 8vh; } .instruction { max-width: 280px; margin-inline: auto; }
-      .status { bottom: 8vh; font-size: 9px; letter-spacing: .08em; } .signature { right: 12px; bottom: 12px; font-size: 8px; }
+      :root { --button-w: min(292px, calc(100vw - 48px)); --button-h: 88px; }
+      .stage { min-height: 360px; }
+      .cta-label { font-size: 20px; }
     }
     @media (hover: none), (pointer: coarse) {
-      .tendrils { display: none; } .venom-button { transform: none !important; }
+      .liquid-scene { display: none; }
+      .cta { transform: none !important; }
+      .stage.is-grabbed, .stage.is-grabbed * { cursor: auto !important; }
     }
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
-      .tendrils { display: none; } .venom-button { transform: none !important; }
+      .liquid-scene { display: none; }
+      .cta { transform: none !important; }
+      .stage.is-grabbed, .stage.is-grabbed * { cursor: auto !important; }
     }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js" integrity="sha384-XmJ9SoHtVOHoQUcKvFAzVXwdkKo1Ie3bhmSoIAkcdsHGaIrVJIkmozyq0FJeb/Ly" crossorigin="anonymous"></script>
 </head>
 <body>
-  <main class="stage" id="stage" aria-label="Venom magnetic button interactive demo">
-    <div class="grain" aria-hidden="true"></div>
-    <header class="topline">
-      <p class="eyebrow">Interactive experiment / 002</p>
-      <p class="instruction">Move anywhere near the button.<br />Watch it reach back.</p>
-    </header>
+  <main class="stage" id="stage" aria-label="Venom-inspired liquid magnetic button demo">
     <div class="button-wrap" id="buttonWrap">
-      <button class="venom-button" id="venomButton" type="button" aria-label="Let's collaborate — magnetic button demo">
-        <span class="button-label">let’s collaborate</span>
+      <button class="cta" id="cta" type="button" aria-label="Let's collaborate">
+        <span class="cta-label">let’s collaborate</span>
       </button>
     </div>
-    <svg class="tendrils" id="tendrils" aria-hidden="true" focusable="false">
+
+    <svg class="liquid-scene" id="liquidScene" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <linearGradient id="inkGradient" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#050609" />
-          <stop offset=".48" stop-color="#111217" />
-          <stop offset="1" stop-color="#020306" />
+        <linearGradient id="liquidFill" x1="0" y1="0" x2="1" y2=".2">
+          <stop offset="0" stop-color="#030406"/>
+          <stop offset=".43" stop-color="#111217"/>
+          <stop offset=".66" stop-color="#050609"/>
+          <stop offset="1" stop-color="#020304"/>
         </linearGradient>
+        <linearGradient id="wetInk" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#34363c" stop-opacity=".86"/>
+          <stop offset=".35" stop-color="#101115" stop-opacity=".92"/>
+          <stop offset="1" stop-color="#020304" stop-opacity=".98"/>
+        </linearGradient>
+        <linearGradient id="specular" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#f5f1e9" stop-opacity=".0"/>
+          <stop offset=".24" stop-color="#d0d1d2" stop-opacity=".46"/>
+          <stop offset=".52" stop-color="#72757b" stop-opacity=".15"/>
+          <stop offset=".83" stop-color="#faf8f2" stop-opacity=".0"/>
+          <stop offset="1" stop-color="#faf8f2" stop-opacity="0"/>
+        </linearGradient>
+        <filter id="goo" x="-35%" y="-45%" width="170%" height="190%" color-interpolation-filters="sRGB">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="5.0" result="soft"/>
+          <feColorMatrix in="soft" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -8" result="merged"/>
+          <feTurbulence type="fractalNoise" baseFrequency=".064 .17" numOctaves="3" seed="11" result="edgeNoise"/>
+          <feDisplacementMap in="merged" in2="edgeNoise" scale="8.2" xChannelSelector="R" yChannelSelector="G" result="organic"/>
+          <feMerge><feMergeNode in="organic"/></feMerge>
+        </filter>
+        <filter id="fiberNoise" x="-10%" y="-20%" width="120%" height="140%" color-interpolation-filters="sRGB">
+          <feTurbulence type="fractalNoise" baseFrequency=".06 .17" numOctaves="2" seed="17" result="fiberGrain"/>
+          <feDisplacementMap in="SourceGraphic" in2="fiberGrain" scale="4.4" xChannelSelector="R" yChannelSelector="G"/>
+        </filter>
+        <filter id="liquidShadow" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="4.5" result="blur"/>
+          <feOffset in="blur" dx="0" dy="5" result="offset"/>
+          <feComponentTransfer><feFuncA type="linear" slope=".24"/></feComponentTransfer>
+          <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="handShadow" x="-25%" y="-20%" width="170%" height="160%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1.3" result="blur"/>
+          <feOffset in="blur" dx="1.4" dy="2.2" result="offset"/>
+          <feComponentTransfer><feFuncA type="linear" slope=".2"/></feComponentTransfer>
+          <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
       </defs>
-      <g id="haloGroup"></g><g id="hairGroup"></g><g id="strandGroup"></g>
+
+      <g id="liquidBody" class="liquid-body" filter="url(#goo)">
+        <path id="mainRibbon" fill="url(#liquidFill)" d=""/>
+        <path id="innerMass" fill="url(#wetInk)" opacity=".62" d=""/>
+        <g id="microDrops"></g>
+        <g id="bodyLobes"></g>
+      </g>
+      <g id="liquidDetail" class="liquid-detail">
+        <path id="mainHighlight" fill="url(#specular)" opacity=".72" d=""/>
+        <g id="buttonDrips"></g>
+        <g id="sideStreams" filter="url(#fiberNoise)"></g>
+        <g id="inkThreads" filter="url(#fiberNoise)"></g>
+        <g id="shineThreads"></g>
+      </g>
+      <g id="handCursor" class="hand-cursor" filter="url(#handShadow)" transform="translate(-80 -80)">
+        <!-- The cursor's index fingertip is the local origin. The palm trails below-right. -->
+        <path d="M 1.8 1.8 C -1.1 -1.4 -5.2 .2 -4.3 4.7 L 4.7 30.2 L -1.5 23.8 C -5.3 20.1 -10.2 22.9 -7.8 27.1 L .3 36.1 L -4.5 33.2 C -8.7 30.7 -12.1 34.6 -9.1 38.9 L -1 47.2 L -3.7 46.3 C -7.1 45.4 -8.8 49.3 -5.6 52.4 L 9.7 68.2 C 14.6 73.2 21.7 72.8 26.2 67.4 L 32.2 60.1 C 35.1 56.6 34.4 52.9 31.7 47.7 L 22.5 29.1 C 20.2 24.4 15.1 25.4 15.9 30.4 L 20.1 40.7 L 9.7 23.9 C 7.5 20.3 3.2 21.7 3.7 25.8 Z" fill="#f6f4ed" stroke="#111216" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M 8.1 28.1 L 13.1 42.5 M 13.7 42.2 L 18.4 55.4 M 19.7 40.9 L 24.4 53.2 M 7.8 41.7 L 10.4 51.3 M 6.1 19.8 L 10.4 24.6" fill="none" stroke="#111216" stroke-width="1.7" stroke-linecap="round"/>
+        <path d="M 7.2 24.2 L 10.3 29.6 M 10.7 22.8 L 13.6 27.7 M 14.1 22.7 L 16.7 27.3" fill="none" stroke="#111216" stroke-width="1.15" stroke-linecap="round"/>
+      </g>
     </svg>
-    <div class="status" aria-live="polite"><span class="status-dot"></span><span id="statusText">Magnetic field · standby</span></div>
-    <span class="signature">VMB—002 / GSAP + SVG</span>
   </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
   <script>
     (() => {
       'use strict';
       const stage = document.getElementById('stage');
-      const button = document.getElementById('venomButton');
-      const svg = document.getElementById('tendrils');
-      const haloGroup = document.getElementById('haloGroup');
-      const hairGroup = document.getElementById('hairGroup');
-      const strandGroup = document.getElementById('strandGroup');
-      const statusText = document.getElementById('statusText');
-      const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+      const button = document.getElementById('cta');
+      const svg = document.getElementById('liquidScene');
+      const body = document.getElementById('liquidBody');
+      const detail = document.getElementById('liquidDetail');
+      const mainRibbon = document.getElementById('mainRibbon');
+      const innerMass = document.getElementById('innerMass');
+      const mainHighlight = document.getElementById('mainHighlight');
+      const sideStreams = document.getElementById('sideStreams');
+      const drips = document.getElementById('buttonDrips');
+      const bodyLobes = document.getElementById('bodyLobes');
+      const drops = document.getElementById('microDrops');
+      const threads = document.getElementById('inkThreads');
+      const shineThreads = document.getElementById('shineThreads');
+      const hand = document.getElementById('handCursor');
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-      const CONFIG = {
-        fieldRadius: 740,
-        maxPullX: 58,
-        maxPullY: 44,
-        pullX: 0.15,
-        pullY: 0.135,
-        strandCount: 19,
-        hairCount: 12,
-        fieldFade: 0.26
+      const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+      const gs = window.gsap;
+
+      const CFG = {
+        closeGap: 24,
+        fieldRadius: 1600,
+        pull: 11,
+        baseTilt: 8.2,
+        tilt: 2.4,
+        ribbonStart: 22,
+        ribbonMid: 12,
+        ribbonTip: 3.8,
+        streamCount: 6,
+        threadCount: 22,
+        dripCount: 10,
       };
-      const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
-      const smoothstep = v => { const x = clamp(v, 0, 1); return x * x * (3 - 2 * x); };
-      const ns = 'http://www.w3.org/2000/svg';
-      const pointer = { x: innerWidth / 2, y: innerHeight / 2, lastX: innerWidth / 2, lastY: innerHeight / 2, time: 0, vx: 0, vy: 0, seen: false, inside: false };
-      const cursorTrack = { x: pointer.x, y: pointer.y };
-      const motion = { x: 0, y: 0, rotation: 0, scale: 1, field: 0 };
-      let viewportWidth = innerWidth;
-      let viewportHeight = innerHeight;
-      let active = false;
-      let pressTween = null;
-      let renderCount = 0;
-      const makePath = (group, className, width, opacity, index) => {
-        const path = document.createElementNS(ns, 'path');
-        path.setAttribute('class', className);
-        path.setAttribute('stroke-width', width);
-        path.dataset.baseOpacity = opacity;
-        path.dataset.index = index;
-        group.appendChild(path);
-        return path;
+      const state = {
+        w: window.innerWidth, h: window.innerHeight,
+        rawX: window.innerWidth * .5 - 310, rawY: window.innerHeight * .5 + 170,
+        x: window.innerWidth * .5 - 310, y: window.innerHeight * .5 + 170,
+        vx: 0, vy: 0, eventVX: 0, eventVY: 0,
+        lastX: 0, lastY: 0, lastEventAt: 0,
+        inside: false, alpha: 0, lastT: 0,
+        anchorAngle: Math.PI * .75,
       };
-      const tendrils = Array.from({ length: CONFIG.strandCount }, (_, i) => ({
-        core: makePath(strandGroup, 'tendril', i % 5 === 0 ? 2.35 : (i % 3 === 0 ? 1.55 : 1.0), 0.62 + (i % 4) * 0.1, i),
-        halo: makePath(haloGroup, 'tendril-halo', i % 4 === 0 ? 5.2 : 3.1, 0.07 + (i % 3) * 0.025, i),
-        fan: (i - (CONFIG.strandCount - 1) / 2) / ((CONFIG.strandCount - 1) / 2),
-        seed: i * 1.618 + .4,
-        length: .78 + (i % 5) * .045
-      }));
-      const hairs = Array.from({ length: CONFIG.hairCount }, (_, i) => ({
-        path: makePath(hairGroup, 'tendril-hair', i % 4 === 0 ? 1.15 : .68, .2 + (i % 3) * .065, i),
-        fan: (i - (CONFIG.hairCount - 1) / 2) / ((CONFIG.hairCount - 1) / 2),
-        seed: i * 2.17 + .8
-      }));
-      const gsapReady = Boolean(window.gsap && typeof window.gsap.quickTo === 'function');
-      if (!gsapReady) {
-        statusText.textContent = 'Animation library unavailable';
-        return;
-      }
-      const gsap = window.gsap;
-      gsap.defaults({ overwrite: 'auto' });
-      gsap.set(button, { x: 0, y: 0, rotation: 0, scale: 1, force3D: true });
-      const xTo = gsap.quickTo(button, 'x', { duration: .42, ease: 'power3.out' });
-      const yTo = gsap.quickTo(button, 'y', { duration: .42, ease: 'power3.out' });
-      const rotationTo = gsap.quickTo(button, 'rotation', { duration: .48, ease: 'power3.out' });
-      const scaleTo = gsap.quickTo(button, 'scale', { duration: .34, ease: 'power3.out' });
-      const fieldTo = gsap.quickTo(motion, 'field', { duration: CONFIG.fieldFade, ease: 'power2.out' });
-      const cursorXTo = gsap.quickTo(cursorTrack, 'x', { duration: .105, ease: 'power2.out' });
-      const cursorYTo = gsap.quickTo(cursorTrack, 'y', { duration: .105, ease: 'power2.out' });
-      function setFieldClass(nextActive) {
-        if (active === nextActive) return;
-        active = nextActive;
-        stage.classList.toggle('is-active', active);
-        statusText.textContent = active ? 'Magnetic field · engaged' : 'Magnetic field · standby';
-      }
-      function setSize() {
-        viewportWidth = window.innerWidth;
-        viewportHeight = window.innerHeight;
-        svg.setAttribute('viewBox', `0 0 ${viewportWidth} ${viewportHeight}`);
-        svg.setAttribute('width', viewportWidth);
-        svg.setAttribute('height', viewportHeight);
-        if (pointer.seen) updateFromPointer(pointer.x, pointer.y, performance.now(), true);
-      }
-      function updateFromPointer(x, y, now, force = false) {
-        const dx = x - viewportWidth / 2;
-        const dy = y - viewportHeight / 2;
-        const distance = Math.hypot(dx, dy);
-        const normalizedReach = clamp(1 - distance / CONFIG.fieldRadius, 0, 1);
-        // A power curve keeps a useful pull over a larger area, without a hard radius edge.
-        const field = Math.pow(normalizedReach, .66);
-        const targetX = clamp(dx * CONFIG.pullX * field, -CONFIG.maxPullX, CONFIG.maxPullX);
-        const targetY = clamp(dy * CONFIG.pullY * field, -CONFIG.maxPullY, CONFIG.maxPullY);
-        const targetRotation = clamp(dx * .012 * field, -4.8, 4.8);
-        const targetScale = 1 + field * .022;
-        xTo(reduceMotion.matches ? 0 : targetX);
-        yTo(reduceMotion.matches ? 0 : targetY);
-        rotationTo(reduceMotion.matches ? 0 : targetRotation);
-        scaleTo(reduceMotion.matches ? 1 : targetScale);
-        fieldTo(reduceMotion.matches || !finePointer.matches ? 0 : field);
-        if (now && pointer.time && !force) {
-          const dt = Math.max(8, now - pointer.time);
-          const rawVX = clamp((x - pointer.lastX) / dt, -2.8, 2.8);
-          const rawVY = clamp((y - pointer.lastY) / dt, -2.8, 2.8);
-          pointer.vx += (rawVX - pointer.vx) * .33;
-          pointer.vy += (rawVY - pointer.vy) * .33;
-        }
-        pointer.lastX = x;
-        pointer.lastY = y;
-        pointer.time = now || performance.now();
-        if (!pointer.seen) {
-          // On first entry, anchor the endpoint at the real pointer immediately; don't sweep in from page center.
-          gsap.set(cursorTrack, { x, y });
-          pointer.seen = true;
-        } else {
-          cursorXTo(x);
-          cursorYTo(y);
-        }
-        pointer.x = x;
-        pointer.y = y;
-        const nextActive = field > .075 && finePointer.matches && !reduceMotion.matches;
-        setFieldClass(nextActive);
-      }
-      function onPointerMove(event) {
-        if (event.pointerType === 'touch') return;
-        pointer.inside = true;
-        updateFromPointer(event.clientX, event.clientY, performance.now());
-      }
-      function releasePointer() {
-        pointer.inside = false;
-        pointer.seen = false;
-        pointer.vx *= .25;
-        pointer.vy *= .25;
-        xTo(0); yTo(0); rotationTo(0); scaleTo(1); fieldTo(0);
-        setFieldClass(false);
-        // Keep the last real cursor coordinates while the filaments retract and fade.
-        // Never redirect them to an arbitrary fallback point below the button.
-      }
-      function endpointFromEllipse(cx, cy, rx, ry, ux, uy) {
-        const denom = Math.sqrt((ux * ux) / (rx * rx) + (uy * uy) / (ry * ry)) || 1;
-        return { x: cx + ux / denom, y: cy + uy / denom };
-      }
-      function curvePath(sx, sy, ex, ey, fan, seed, time, field, velocityX, velocityY, index) {
-        const dx = ex - sx; const dy = ey - sy;
-        const distance = Math.hypot(dx, dy) || 1;
-        const nx = -dy / distance; const ny = dx / distance;
-        const tangentOffset = fan * (7 + field * 18);
-        const sway = Math.sin(time * .0018 + seed) * (2.5 + field * 14);
-        const twitch = Math.cos(time * .00125 + seed * 1.37) * (2 + field * 9);
-        const speedBend = clamp(Math.hypot(velocityX, velocityY) * 18, 0, 36);
-        const dirX = dx / distance; const dirY = dy / distance;
-        const c1x = sx + dx * .24 + nx * (tangentOffset + sway) - velocityX * speedBend * .28;
-        const c1y = sy + dy * .24 + ny * (tangentOffset + sway) - velocityY * speedBend * .28;
-        const c2x = sx + dx * .71 + nx * (tangentOffset * 1.7 + twitch) - velocityX * speedBend * .7;
-        const c2y = sy + dy * .71 + ny * (tangentOffset * 1.7 + twitch) - velocityY * speedBend * .7;
-        const endWobble = Math.sin(time * .0015 + seed * 2.1) * (1.2 + field * 4.8);
-        const endX = ex + nx * (fan * (4 + field * 14) + endWobble) + dirX * Math.cos(seed + time * .0018) * field * 2;
-        const endY = ey + ny * (fan * (4 + field * 14) + endWobble) + dirY * Math.cos(seed + time * .0018) * field * 2;
-        return `M ${sx.toFixed(2)} ${sy.toFixed(2)} C ${c1x.toFixed(2)} ${c1y.toFixed(2)}, ${c2x.toFixed(2)} ${c2y.toFixed(2)}, ${endX.toFixed(2)} ${endY.toFixed(2)}`;
-      }
-      function render(time) {
-        renderCount += 1;
-        const field = clamp(motion.field, 0, 1);
-        // Don't render moving tendrils on touch screens, reduced-motion mode, or when fully released.
-        if (!finePointer.matches || reduceMotion.matches || field < .004) {
-          if (field < .004) {
-            for (const item of tendrils) { item.core.style.opacity = '0'; item.halo.style.opacity = '0'; }
-            for (const item of hairs) item.path.style.opacity = '0';
-          }
-          return;
-        }
-        const buttonX = Number(gsap.getProperty(button, 'x')) || 0;
-        const buttonY = Number(gsap.getProperty(button, 'y')) || 0;
-        const buttonRect = button.getBoundingClientRect();
-        const cx = viewportWidth / 2 + buttonX;
-        const cy = viewportHeight / 2 + buttonY;
-        const bw = buttonRect.width || 318;
-        const bh = buttonRect.height || 106;
-        const tx = cursorTrack.x;
-        const ty = cursorTrack.y;
-        const dx = tx - cx; const dy = ty - cy;
-        const angle = Math.atan2(dy, dx);
-        const ux = Math.cos(angle); const uy = Math.sin(angle);
-        const tangentX = -uy; const tangentY = ux;
-        const edge = endpointFromEllipse(cx, cy, bw * .49, bh * .47, ux, uy);
-        const velocityX = clamp(pointer.vx, -2.2, 2.2);
-        const velocityY = clamp(pointer.vy, -2.2, 2.2);
-        const startTime = time * 1000;
-        tendrils.forEach((item, index) => {
-          const startFan = item.fan * (8 + field * 27);
-          const sx = edge.x + tangentX * startFan;
-          const sy = edge.y + tangentY * startFan;
-          const targetOffset = item.fan * (2 + field * 18);
-          const ex = tx + tangentX * targetOffset;
-          const ey = ty + tangentY * targetOffset;
-          const d = curvePath(sx, sy, ex, ey, item.fan, item.seed, startTime, field, velocityX, velocityY, index);
-          const op = clamp(field * Number(item.core.dataset.baseOpacity), 0, .92);
-          item.core.setAttribute('d', d); item.halo.setAttribute('d', d);
-          item.core.style.opacity = op.toFixed(3);
-          item.halo.style.opacity = (field * Number(item.halo.dataset.baseOpacity)).toFixed(3);
-        });
-        hairs.forEach((item, index) => {
-          const spread = item.fan * (13 + field * 35);
-          const sx = edge.x + tangentX * spread;
-          const sy = edge.y + tangentY * spread;
-          const ex = tx + tangentX * item.fan * (8 + field * 22);
-          const ey = ty + tangentY * item.fan * (8 + field * 22);
-          const d = curvePath(sx, sy, ex, ey, item.fan * 1.3, item.seed, startTime + 31, field, velocityX * .65, velocityY * .65, index + 31);
-          item.path.setAttribute('d', d);
-          item.path.style.opacity = (field * Number(item.path.dataset.baseOpacity)).toFixed(3);
+      const NS = 'http://www.w3.org/2000/svg';
+      const makePath = (parent, attrs = {}) => {
+        const el = document.createElementNS(NS, 'path');
+        for (const [key, value] of Object.entries(attrs)) el.setAttribute(key, value);
+        parent.appendChild(el);
+        return el;
+      };
+      const streamPaths = [];
+      for (let i = 0; i < CFG.streamCount; i++) {
+        const v = (i / (CFG.streamCount - 1)) * 2 - 1;
+        streamPaths.push({
+          node: makePath(sideStreams, { fill: i % 3 === 0 ? 'url(#wetInk)' : (i % 2 ? '#040507' : '#111318'), opacity: (0.72 + ((i * 7) % 4) * .07).toFixed(2) }),
+          v, seed: i * 1.79 + .42,
+          start: 1.8 + (i % 4) * .48,
+          mid: .78 + (i % 4) * .18,
+          tip: .16 + (i % 3) * .1,
         });
       }
-      function handleMotionPreference() {
-        if (reduceMotion.matches || !finePointer.matches) releasePointer();
-        else if (pointer.inside) updateFromPointer(pointer.x, pointer.y, performance.now(), true);
+      const dripPaths = [];
+      for (let i = 0; i < CFG.dripCount; i++) {
+        dripPaths.push({
+          node: makePath(drips, { fill: i % 2 ? '#030406' : '#101115', opacity: (0.62 + (i % 3) * .1).toFixed(2) }),
+          offset: (i - (CFG.dripCount - 1) / 2) / ((CFG.dripCount - 1) / 2),
+          seed: 1.3 + i * 2.2,
+        });
       }
-      window.addEventListener('pointermove', onPointerMove, { passive: true });
-      window.addEventListener('pointerleave', releasePointer, { passive: true });
-      window.addEventListener('blur', releasePointer);
-      window.addEventListener('resize', setSize, { passive: true });
-      if (finePointer.addEventListener) finePointer.addEventListener('change', handleMotionPreference);
-      if (reduceMotion.addEventListener) reduceMotion.addEventListener('change', handleMotionPreference);
-      button.addEventListener('pointerdown', () => {
-        if (pressTween) pressTween.kill();
-        pressTween = gsap.to(button, { scale: Math.max(.96, (Number(gsap.getProperty(button, 'scale')) || 1) * .97), duration: .12, yoyo: true, repeat: 1, ease: 'power2.out' });
+      const dropNodes = [];
+      for (let i = 0; i < 5; i++) {
+        dropNodes.push({ node: document.createElementNS(NS, 'ellipse'), seed: i * 2.1 + .7, size: 1.5 + (i % 3) * .85 });
+        drops.appendChild(dropNodes[i].node);
+        dropNodes[i].node.setAttribute('fill', '#07080b');
+      }
+      const lobeSpecs = [
+        { at: .018, side: -1, rx: 20.5, ry: 13.2, seed: .5 },
+        { at: .043, side: 1, rx: 16.4, ry: 10.7, seed: 1.9 },
+        { at: .078, side: -1, rx: 12.2, ry: 8.3, seed: 3.1 },
+        { at: .12, side: 1, rx: 9.4, ry: 6.6, seed: 4.8 },
+        { at: .17, side: -1, rx: 7.1, ry: 5.1, seed: 6.2 },
+        { at: .225, side: 1, rx: 5.2, ry: 3.9, seed: 7.7 },
+        { at: .28, side: -1, rx: 3.7, ry: 2.8, seed: 9.4 },
+      ];
+      const lobeNodes = lobeSpecs.map((spec, i) => {
+        const node = document.createElementNS(NS, 'ellipse');
+        node.setAttribute('fill', i % 2 ? '#08090c' : '#030406');
+        node.setAttribute('opacity', i < 2 ? '.92' : '.76');
+        bodyLobes.appendChild(node);
+        return { ...spec, node };
       });
-      gsap.ticker.add(render);
-      setSize();
+      const inkThreadPaths = [];
+      for (let i = 0; i < CFG.threadCount; i++) {
+        inkThreadPaths.push({
+          node: makePath(threads, { fill: 'none', stroke: i % 4 === 0 ? '#030406' : (i % 3 === 0 ? '#4b4d53' : '#26282e'), 'stroke-linecap': 'round', opacity: (0.25 + (i % 5) * .105).toFixed(2), 'stroke-width': (.48 + (i % 4) * .38).toFixed(2) }),
+          v: (i / (CFG.threadCount - 1)) * 2 - 1,
+          seed: i * 1.39 + .8,
+        });
+      }
+      const shinePaths = [];
+      for (let i = 0; i < 4; i++) {
+        shinePaths.push({ node: makePath(shineThreads, { fill: 'none', stroke: 'url(#specular)', 'stroke-linecap': 'round', opacity: (0.20 + i * .055).toFixed(2), 'stroke-width': (1.0 + (i % 2) * .55).toFixed(2) }), v: (i - 1.5) / 2, seed: i * 2.4 + .2 });
+      }
+
+      let pointerToX = null, pointerToY = null;
+      let buttonToX = null, buttonToY = null, buttonToRotation = null, buttonToScaleX = null, buttonToScaleY = null;
+      if (gs && !reduceMotion.matches && finePointer.matches) {
+        gs.set(button, { x: 0, y: 0, rotation: CFG.baseTilt, scaleX: 1, scaleY: 1, transformOrigin: '50% 50%' });
+        // Retargetable tweens smooth the visual hand independently from the physical pointer events.
+        pointerToX = gs.quickTo(state, 'x', { duration: .2, ease: 'power3.out' });
+        pointerToY = gs.quickTo(state, 'y', { duration: .2, ease: 'power3.out' });
+        buttonToX = gs.quickTo(button, 'x', { duration: .42, ease: 'power3.out' });
+        buttonToY = gs.quickTo(button, 'y', { duration: .42, ease: 'power3.out' });
+        buttonToRotation = gs.quickTo(button, 'rotation', { duration: .5, ease: 'power3.out' });
+        buttonToScaleX = gs.quickTo(button, 'scaleX', { duration: .4, ease: 'power3.out' });
+        buttonToScaleY = gs.quickTo(button, 'scaleY', { duration: .4, ease: 'power3.out' });
+      }
+
+      const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+      const lerp = (a, b, t) => a + (b - a) * t;
+      const smoothstep = (edge0, edge1, x) => {
+        const t = clamp((x - edge0) / (edge1 - edge0), 0, 1);
+        return t * t * (3 - 2 * t);
+      };
+      const point = (x, y) => `${x.toFixed(2)} ${y.toFixed(2)}`;
+      const unit = (x, y) => {
+        const length = Math.hypot(x, y) || 1;
+        return { x: x / length, y: y / length, length };
+      };
+      function resize() {
+        state.w = window.innerWidth; state.h = window.innerHeight;
+        svg.setAttribute('viewBox', `0 0 ${state.w} ${state.h}`);
+        svg.setAttribute('width', state.w); svg.setAttribute('height', state.h);
+      }
+      function handlePointer(event) {
+        if (event.pointerType === 'touch' || reduceMotion.matches || !finePointer.matches) return;
+        const now = performance.now();
+        const x = event.clientX, y = event.clientY;
+        if (state.lastEventAt) {
+          const dt = Math.max(8, now - state.lastEventAt);
+          state.eventVX = clamp((x - state.lastX) / dt * 16.67, -44, 44);
+          state.eventVY = clamp((y - state.lastY) / dt * 16.67, -44, 44);
+        }
+        state.rawX = x; state.rawY = y; state.inside = true;
+        state.lastX = x; state.lastY = y; state.lastEventAt = now;
+        if (pointerToX && pointerToY) { pointerToX(x); pointerToY(y); }
+        if (buttonToX) {
+          const bx = state.w / 2, by = state.h / 2;
+          const dx = x - bx, dy = y - by, dist = Math.hypot(dx, dy) || 1;
+          const far = clamp((dist - 105) / 260, 0, 1);
+          buttonToX(clamp(dx / dist * CFG.pull * far, -CFG.pull, CFG.pull));
+          buttonToY(clamp(dy / dist * CFG.pull * far, -CFG.pull, CFG.pull));
+          buttonToRotation(CFG.baseTilt + clamp(dx / dist * CFG.tilt + state.eventVX * .045, -3.2, 3.2));
+          buttonToScaleX(1 + far * .025 + clamp(Math.abs(state.eventVX) / 1600, 0, .018));
+          buttonToScaleY(1 - far * .018 - clamp(Math.abs(state.eventVY) / 1800, 0, .014));
+        }
+      }
+      function leavePointer() {
+        state.inside = false;
+        state.eventVX = 0; state.eventVY = 0;
+        if (buttonToX) {
+          buttonToX(0); buttonToY(0); buttonToRotation(CFG.baseTilt); buttonToScaleX(1); buttonToScaleY(1);
+        }
+      }
+      stage.addEventListener('pointermove', handlePointer, { passive: true });
+      stage.addEventListener('pointerleave', leavePointer);
+      window.addEventListener('blur', leavePointer);
+      window.addEventListener('resize', resize, { passive: true });
+      resize();
+
+      function makeRibbon(ax, ay, tx, ty, nx, ny, length, variant, seed, now, startWidth, midWidth, tipWidth, bendBase) {
+        const ux = (tx - ax) / (length || 1), uy = (ty - ay) / (length || 1);
+        const t = now * .001;
+        const speedBend = clamp((state.vx * uy - state.vy * ux) * .65, -26, 26);
+        const waveA = Math.sin(t * 2.3 + seed) * (5.0 + Math.abs(variant) * 4.3) + speedBend * .5;
+        const waveB = Math.cos(t * 1.67 + seed * 1.31) * (13.0 + Math.abs(variant) * 8.5) + speedBend * .95;
+        const waveC = Math.sin(t * 1.41 + seed * .83) * (3.4 + Math.abs(variant) * 2.8);
+        const offset0 = variant * startWidth * 1.08;
+        const offset1 = variant * (midWidth * 2.75 + 20.0) + waveA;
+        const offset2 = variant * (midWidth * 2.35 + 16.0) + waveB;
+        const offsetT = variant * (tipWidth * .55 + 4.0) + waveC * .75;
+        const startPlus = startWidth + offset0;
+        const startMinus = -startWidth + offset0;
+        const mid1Plus = offset1 + midWidth * (1.08 + .18 * Math.sin(t + seed));
+        const mid2Plus = offset2 + midWidth * (0.72 + .24 * Math.cos(t * .8 + seed));
+        const mid1Minus = offset1 - midWidth * (0.76 + .20 * Math.cos(t + seed));
+        const mid2Minus = offset2 - midWidth * (1.12 + .14 * Math.sin(t * .9 + seed));
+        const tipPlus = offsetT + tipWidth;
+        const tipMinus = offsetT - tipWidth;
+        const c1x = ax + ux * length * .2 + nx * (offset0 + startWidth * .88 + waveA * .18);
+        const c1y = ay + uy * length * .2 + ny * (offset0 + startWidth * .88 + waveA * .18);
+        const c2x = tx - ux * length * .28 + nx * mid2Plus;
+        const c2y = ty - uy * length * .28 + ny * mid2Plus;
+        const c3x = tx - ux * length * .24 + nx * mid2Minus;
+        const c3y = ty - uy * length * .24 + ny * mid2Minus;
+        const c4x = ax + ux * length * .2 + nx * (offset0 - startWidth * .88 + waveA * .18);
+        const c4y = ay + uy * length * .2 + ny * (offset0 - startWidth * .88 + waveA * .18);
+        return `M ${point(ax + nx * startPlus, ay + ny * startPlus)} C ${point(c1x, c1y)}, ${point(c2x, c2y)}, ${point(tx + nx * tipPlus, ty + ny * tipPlus)} C ${point(tx - ux * length * .28 + nx * mid2Minus, ty - uy * length * .28 + ny * mid2Minus)}, ${point(c4x, c4y)}, ${point(ax + nx * startMinus, ay + ny * startMinus)} Z`;
+      }
+      function makeThread(ax, ay, tx, ty, nx, ny, length, variant, seed, now) {
+        const ux = (tx - ax) / (length || 1), uy = (ty - ay) / (length || 1);
+        const t = now * .001;
+        const crossVelocity = clamp((state.vx * uy - state.vy * ux) * .72, -36, 36);
+        const bendA = Math.sin(t * 1.33 + seed) * (14 + Math.abs(variant) * 22) + Math.cos(t * .79 + seed * 1.4) * 10 + crossVelocity;
+        const bendB = Math.cos(t * 1.08 + seed * 1.73) * (12 + Math.abs(variant) * 18) - Math.sin(t * .91 + seed * 2.6) * 9 - crossVelocity * .38;
+        const startShift = variant * 17 + Math.sin(t * 1.7 + seed) * 4.8;
+        const endShift = variant * 6.4 + Math.cos(t * 1.7 + seed) * 4.8;
+        const sx = ax + nx * startShift;
+        const sy = ay + ny * startShift;
+        const ex = tx + nx * endShift;
+        const ey = ty + ny * endShift;
+        const c1x = ax + ux * length * .24 + nx * bendA;
+        const c1y = ay + uy * length * .24 + ny * bendA;
+        const mx = ax + ux * length * .54 + nx * (bendA * .28 + bendB);
+        const my = ay + uy * length * .54 + ny * (bendA * .28 + bendB);
+        const c2x = tx - ux * length * .22 + nx * (bendB - bendA * .1);
+        const c2y = ty - uy * length * .22 + ny * (bendB - bendA * .1);
+        return `M ${point(sx, sy)} C ${point(c1x, c1y)}, ${point(ax + ux * length * .43 + nx * bendA * .24, ay + uy * length * .43 + ny * bendA * .24)}, ${point(mx, my)} C ${point(ax + ux * length * .72 + nx * bendB, ay + uy * length * .72 + ny * bendB)}, ${point(c2x, c2y)}, ${point(ex, ey)}`;
+      }
+      function updateLiquid(now, dt) {
+        // Native spring fallback also handles an unavailable CDN; GSAP normally smooths the mouse target.
+        if (!(gs && pointerToX && buttonToX)) {
+          const smoothing = 1 - Math.exp(-dt / 135);
+          state.x = lerp(state.x, state.rawX, smoothing);
+          state.y = lerp(state.y, state.rawY, smoothing);
+          const dx = state.rawX - state.w / 2, dy = state.rawY - state.h / 2, dist = Math.hypot(dx, dy) || 1;
+          const far = clamp((dist - 105) / 260, 0, 1);
+          button.style.transform = `translate3d(${clamp(dx / dist * CFG.pull * far, -CFG.pull, CFG.pull)}px,${clamp(dy / dist * CFG.pull * far, -CFG.pull, CFG.pull)}px,0) rotate(${CFG.baseTilt + clamp(dx / dist * CFG.tilt, -3, 3)}deg) scale(${1 + far * .01})`;
+        }
+        state.vx = lerp(state.vx, state.eventVX, 1 - Math.exp(-dt / 76));
+        state.vy = lerp(state.vy, state.eventVY, 1 - Math.exp(-dt / 76));
+        state.eventVX *= Math.exp(-dt / 78);
+        state.eventVY *= Math.exp(-dt / 78);
+        const rect = button.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const px = state.x;
+        const py = state.y;
+        const handX = px, handY = py;
+        const joinX = handX + 18;
+        const joinY = handY + 28;
+        const dx = joinX - cx, dy = joinY - cy;
+        const distance = Math.hypot(dx, dy) || 1;
+        const pointerInButton = state.rawX >= rect.left - CFG.closeGap && state.rawX <= rect.right + CFG.closeGap && state.rawY >= rect.top - CFG.closeGap && state.rawY <= rect.bottom + CFG.closeGap;
+        const targetAlpha = state.inside && !pointerInButton && distance < CFG.fieldRadius && !reduceMotion.matches && finePointer.matches ? 1 : 0;
+        state.alpha += (targetAlpha - state.alpha) * (1 - Math.exp(-dt / (targetAlpha ? 84 : 150)));
+        const rayLen = Math.sqrt((dx * dx) / Math.pow(Math.max(12, rect.width * .48), 2) + (dy * dy) / Math.pow(Math.max(12, rect.height * .43), 2)) || 1;
+        const geometryValid = state.inside && !pointerInButton && rayLen > 1.015 && distance < CFG.fieldRadius;
+        const visible = state.alpha > .018;
+        body.style.opacity = String(state.alpha);
+        detail.style.opacity = String(state.alpha * .88);
+        hand.style.opacity = String(state.alpha);
+        stage.classList.toggle('is-grabbed', visible);
+        if (state.alpha < .003 || !geometryValid) return;
+
+        const desiredAngle = Math.atan2(dy / Math.max(1, rect.height * .43), dx / Math.max(1, rect.width * .48));
+        let deltaAngle = desiredAngle - state.anchorAngle;
+        while (deltaAngle > Math.PI) deltaAngle -= Math.PI * 2;
+        while (deltaAngle < -Math.PI) deltaAngle += Math.PI * 2;
+        state.anchorAngle += deltaAngle * (1 - Math.exp(-dt / 70));
+        // Smooth the perimeter angle separately from the cursor; the anchor stays on the pill edge.
+        const edgeRx = Math.max(12, rect.width * .48);
+        const edgeRy = Math.max(12, rect.height * .43);
+        const restAngle = CFG.baseTilt * Math.PI / 180;
+        const edgeLocalX = edgeRx * Math.cos(state.anchorAngle);
+        const edgeLocalY = edgeRy * Math.sin(state.anchorAngle);
+        const ax = cx + edgeLocalX * Math.cos(restAngle) - edgeLocalY * Math.sin(restAngle);
+        const ay = cy + edgeLocalX * Math.sin(restAngle) + edgeLocalY * Math.cos(restAngle);
+        const actualDx = joinX - ax, actualDy = joinY - ay;
+        const dir = unit(actualDx, actualDy);
+        const nx = -dir.y, ny = dir.x;
+        const length = Math.max(1, dir.length);
+        const velocity = Math.hypot(state.vx, state.vy);
+        const tension = .7 + clamp((length - 70) / 420, 0, 1) * .3;
+        const start = CFG.ribbonStart * tension;
+        const mid = CFG.ribbonMid * tension + clamp(velocity * .075, 0, 5);
+        const tip = CFG.ribbonTip + clamp(velocity * .025, 0, 1.5);
+        // The viscous body does not become a uniform cable all the way to the hand.
+        // A thick mass tapers out early; independent filaments carry the last stretch.
+        const bodyEnd = { x: ax + (joinX - ax) * .215, y: ay + (joinY - ay) * .215 };
+        const innerEnd = { x: ax + (joinX - ax) * .205, y: ay + (joinY - ay) * .205 };
+        const glossEnd = { x: ax + (joinX - ax) * .17, y: ay + (joinY - ay) * .17 };
+        mainRibbon.setAttribute('d', makeRibbon(ax, ay, bodyEnd.x, bodyEnd.y, nx, ny, length * .215, 0.17, 3.1, now, start * 1.05, mid * 1.12, tip + 4.6, 0));
+        innerMass.setAttribute('d', makeRibbon(ax, ay, innerEnd.x, innerEnd.y, nx, ny, length * .205, -.13, 5.7, now, start * .58, mid * .5, Math.max(1.2, tip * .9), 0));
+        mainHighlight.setAttribute('d', makeRibbon(ax, ay, glossEnd.x, glossEnd.y, nx, ny, length * .17, .24, 8.2, now, start * .40, mid * .32, 1.5, 0));
+        const ropeAngle = Math.atan2(dir.y, dir.x) * 180 / Math.PI;
+        lobeNodes.forEach((item, i) => {
+          const t = now * .001;
+          const f = item.at;
+          const centerX = ax + dir.x * length * f + nx * (item.side * (start * (1 - f) + mid * f) * .78 + Math.sin(t * 1.6 + item.seed) * 2.4);
+          const centerY = ay + dir.y * length * f + ny * (item.side * (start * (1 - f) + mid * f) * .78 + Math.sin(t * 1.6 + item.seed) * 2.4);
+          item.node.setAttribute('cx', centerX.toFixed(2));
+          item.node.setAttribute('cy', centerY.toFixed(2));
+          item.node.setAttribute('rx', (item.rx * (.91 + .12 * Math.sin(t * 1.7 + item.seed))).toFixed(2));
+          item.node.setAttribute('ry', (item.ry * (.88 + .18 * Math.cos(t * 1.3 + item.seed))).toFixed(2));
+          item.node.setAttribute('transform', `rotate(${(ropeAngle + Math.sin(t + item.seed) * 9).toFixed(2)} ${centerX.toFixed(2)} ${centerY.toFixed(2)})`);
+        });
+        streamPaths.forEach((item, i) => {
+          const s = item.v;
+          const startWidth = item.start * (0.78 + .22 * Math.sin(now * .0013 + item.seed));
+          const midWidth = item.mid * (0.72 + .28 * Math.cos(now * .0011 + item.seed));
+          const tipWidth = item.tip * (0.7 + .3 * Math.sin(now * .0018 + item.seed));
+          // Thin, irregular ribbons stay distinct along the tether; the short root mass is goo-filtered.
+          // This prevents adjacent strands from being thresholded into one flat, cable-like wedge.
+          item.node.setAttribute('d', makeRibbon(ax, ay, joinX, joinY, nx, ny, length, s * 1.12, item.seed, now, startWidth, midWidth, tipWidth, 0));
+        });
+        dripPaths.forEach((item, i) => {
+          const t = now * .001;
+          const sourceAngle = state.anchorAngle + item.offset * (.43 + .045 * Math.sin(t * .8 + item.seed));
+          const sourceLocalX = edgeRx * Math.cos(sourceAngle);
+          const sourceLocalY = edgeRy * Math.sin(sourceAngle);
+          const sx = cx + sourceLocalX * Math.cos(restAngle) - sourceLocalY * Math.sin(restAngle);
+          const sy = cy + sourceLocalX * Math.sin(restAngle) + sourceLocalY * Math.cos(restAngle);
+          const len = 21 + (i % 4) * 10 + (Math.sin(t * 1.8 + item.seed) + 1) * 10 + Math.min(velocity, 25) * .24;
+          const width = 3.2 + (i % 3) * 1.35;
+          // Gravity pulls the hanging drips down even while the main tether stretches sideways.
+          const gravity = unit(dir.x * .13 + Math.sin(t + item.seed) * .045, 1.0 + dir.y * .11);
+          const ox = nx * (Math.sin(t * 2 + item.seed) * 3.7), oy = ny * (Math.sin(t * 2 + item.seed) * 3.7);
+          const ex = sx + gravity.x * len + ox, ey = sy + gravity.y * len + oy;
+          const c1x = sx + gravity.x * len * .27 + nx * width * 1.5, c1y = sy + gravity.y * len * .27 + ny * width * 1.5;
+          const c2x = ex - gravity.x * len * .22 + nx * width * .45, c2y = ey - gravity.y * len * .22 + ny * width * .45;
+          const c3x = ex - gravity.x * len * .16 - nx * width * .55, c3y = ey - gravity.y * len * .16 - ny * width * .55;
+          const c4x = sx + gravity.x * len * .2 - nx * width * 1.15, c4y = sy + gravity.y * len * .2 - ny * width * 1.15;
+          item.node.setAttribute('d', `M ${point(sx + nx * width, sy + ny * width)} C ${point(c1x, c1y)}, ${point(c2x, c2y)}, ${point(ex, ey)} C ${point(c3x, c3y)}, ${point(c4x, c4y)}, ${point(sx - nx * width, sy - ny * width)} Z`);
+        });
+        dropNodes.forEach((item, i) => {
+          const t = now * .001;
+          const offset = ((i - 2) / 2) * start * .92;
+          const along = -3 + (i % 3) * 7 + (Math.sin(t * 1.9 + item.seed) + 1) * 4;
+          item.node.setAttribute('cx', (ax + nx * offset + dir.x * along).toFixed(2));
+          item.node.setAttribute('cy', (ay + ny * offset + dir.y * along).toFixed(2));
+          item.node.setAttribute('rx', (item.size * (.65 + .2 * Math.sin(t + item.seed))).toFixed(2));
+          item.node.setAttribute('ry', (item.size * (1.2 + .5 * Math.cos(t * 1.1 + item.seed))).toFixed(2));
+        });
+        inkThreadPaths.forEach((item, i) => {
+          item.node.setAttribute('d', makeThread(ax, ay, joinX, joinY, nx, ny, length, item.v, item.seed, now));
+        });
+        shinePaths.forEach((item, i) => {
+          item.node.setAttribute('d', makeThread(ax + nx * 2.2, ay + ny * 2.2, joinX - nx * 1.2, joinY - ny * 1.2, nx, ny, length * (.76 + i * .04), item.v, item.seed, now));
+        });
+        // Illustrative hand follows the eased pointer, not a made-up fallback point.
+        hand.setAttribute('transform', `translate(${handX.toFixed(2)} ${handY.toFixed(2)}) rotate(${-8 + clamp(state.vx * .12, -5, 5)}) scale(1.3)`);
+      }
+      function tick(time) {
+        const dt = state.lastT ? clamp(time - state.lastT, 8, 40) : 16.67;
+        state.lastT = time;
+        updateLiquid(time, dt);
+      }
+      if (gs && gs.ticker && !reduceMotion.matches && finePointer.matches) gs.ticker.add(() => tick(performance.now()));
+      else {
+        const fallback = (time) => { tick(time); requestAnimationFrame(fallback); };
+        requestAnimationFrame(fallback);
+      }
+      button.addEventListener('click', () => {
+        if (reduceMotion.matches) return;
+        if (gs) gs.fromTo(button, { scaleX: 1, scaleY: 1 }, { scaleX: .965, scaleY: 1.035, duration: .12, yoyo: true, repeat: 1, ease: 'power2.out', overwrite: 'auto' });
+      });
     })();
   </script>
 </body>
