@@ -1,10 +1,10 @@
-# Venom Magnetic Button — V2
+# Venom Magnetic Button — Liquid Capture
 
-A Venom-inspired magnetic CTA experiment: a glossy black pill on a warm paper surface, a larger cursor attraction field, and animated SVG ink tendrils that reach toward the live pointer.
+A single-page interaction experiment inspired by the supplied glossy black “let’s collaborate” button. The pointer connection is built from a short gooey mass at the button edge, separate variable-width liquid ribbons, fine irregular filaments, dangling drips, and a hand-drawn pointer.
 
 ## Run locally
 
-This is a static page with no build step. Open `index.html` in a modern desktop browser, or start a local server:
+No build step is required. Open `index.html` in a modern desktop browser, or run:
 
 ```bash
 python3 -m http.server 8000
@@ -12,45 +12,42 @@ python3 -m http.server 8000
 
 Then visit `http://localhost:8000`.
 
-## Interaction
+## How the effect is built
 
-- The button stays centered at rest and tilts/pulls toward the pointer.
-- The magnetic influence radius is approximately **740 CSS pixels** from the viewport centre, so the effect responds much earlier than the previous version.
-- GSAP `quickTo()` handles responsive pointer tracking with interruption-friendly tweens.
-- SVG Bézier strands use the button's ellipse edge as their anchor and follow a smoothed cursor target.
-- Strand control points react subtly to pointer velocity for a more organic, ink-like pull.
-- When the pointer leaves the attraction field or viewport, the button returns and the filaments fade out from their last real pointer position. No artificial fallback target is used.
-- Touch/coarse pointers and `prefers-reduced-motion` use a reduced/static state.
-- Clicking the button only provides a short press response; no network request or navigation occurs.
-
-> A webpage cannot physically move the operating-system cursor. This demo conveys a grab/capture feeling by moving the button and extending animated tendrils toward the pointer.
+- A warm, lightly textured background and a glossy, tilted black pill.
+- SVG `feGaussianBlur → feColorMatrix` for a thresholded goo silhouette, then `feTurbulence → feDisplacementMap` for an irregular, wet edge.
+- A short root mass stays connected to the button; tapered ribbon streams and smaller hair-like paths stay separately animated along the tether. This avoids blending every stream into a single flat triangular cable.
+- The paths use multiple Bézier segments with filtered pointer velocity and independent phases, so they bend unevenly as the pointer moves.
+- Unequal gravity-driven drips hang from the button's edge; an illustrated hand follows the smoothed pointer position.
+- GSAP `quickTo()` is loaded from jsDelivr for retargetable pointer/button motion. A requestAnimationFrame fallback keeps the interaction usable when the CDN is unavailable.
+- The real OS pointer is hidden during the effect and replaced with the illustrated hand. Ordinary webpages cannot physically move the system cursor; the capture is visual.
 
 ## Tune the effect
 
-In `index.html`, adjust the `CONFIG` object:
+The interaction settings are near the top of the script in `CFG`:
 
-- `fieldRadius`: increase/decrease how far from the centre the effect begins.
-- `maxPullX` / `maxPullY`: limit the button's movement.
-- `pullX` / `pullY`: movement strength.
-- `strandCount` / `hairCount`: visual thread density.
-- `fieldFade`: how quickly strands appear/disappear.
+- `fieldRadius`: interaction radius (CSS pixels from viewport centre).
+- `pull`: button movement amount.
+- `baseTilt` and `tilt`: resting and reactive rotation.
+- `streamCount`, `threadCount`, `dripCount`: number of liquid ribbons, fine filaments, and hanging drips.
 
-The standalone page loads GSAP 3.15.0 from jsDelivr. SVG geometry itself is custom-generated in the ticker; no paid MorphSVG plugin or WebGL dependency is required for this effect.
+SVG filter intensity and path roughness are under `<defs>` in `index.html`. Keep the broad body filter on the short liquid mass; filtering every long filament together tends to merge it into a filled wedge.
 
-## Research notes
+## Research references
 
-The implementation combines established patterns rather than adding a heavy rendering engine for a small number of curves:
+- [Codrops — Gooey Cursor Effect](https://tympanus.net/codrops/2023/06/07/gooey-cursor-effect/) — SVG goo filters and the combination of blur, alpha threshold, and displacement.
+- [Codrops — Creative Gooey Effects](https://tympanus.net/codrops/2015/03/10/creative-gooey-effects/) — fundamentals of SVG gooey filter primitives.
+- [GSAP `quickTo()`](https://gsap.com/docs/v3/GSAP/gsap.quickTo/) — repeatedly retargeting pointer-driven animation without creating a new tween for each event.
+- [GSAP ticker](https://gsap.com/docs/v3/GSAP/gsap.ticker/) — synchronize geometry updates with the animation loop.
+- [Interactive WebGL metaballs](https://github.com/sigco3111/interactive-metaballs) — a GPU-based alternative. WebGL was not chosen here because this is a single 2D interaction and SVG remains simpler to adjust.
 
-- [GSAP `quickTo()`](https://gsap.com/docs/v3/GSAP/gsap.quickTo/) — optimized retargetable tweens suitable for rapidly changing pointer coordinates.
-- [GSAP ticker](https://gsap.com/docs/v3/GSAP/gsap.ticker/) — synchronizes the custom SVG path update loop with the animation engine.
-- [Codrops — Magnetic Buttons](https://tympanus.net/codrops/2020/08/05/magnetic-buttons/) — examples of magnetic movement and separately animated button details.
-- [Codrops — Custom Cursor Effects](https://tympanus.net/codrops/2019/01/31/custom-cursor-effects/) — reference for cursor-following graphics and organic/noisy motion.
+## Validation
 
-## Validation checklist
+- [x] Inline JavaScript passed `node --check`.
+- [x] Chromium/Playwright pointer simulation ran with no JavaScript errors.
+- [x] Tested a pointer near the lower-left, above the button, and through a rapid diagonal change.
+- [ ] Still worth testing manually in your regular browser with GSAP CDN available; the test container could not reach jsDelivr, so its fallback animation path was the one exercised there.
 
-- [x] Inline JavaScript passes `node --check`.
-- [x] Replaced the previous fixed lower fallback endpoint, which could pull tendrils downward when the cursor left the attraction area.
-- [x] Cursor movement is tracked at viewport level, not just on the button.
-- [x] Button motion and cursor/tendril motion are smoothed independently.
-- [ ] Verify movement visually in a desktop browser at normal and high pointer speeds.
-- [ ] Verify on a narrow viewport and with reduced-motion enabled.
+## Browser notes
+
+Touch/coarse pointers and `prefers-reduced-motion` receive a reduced/static treatment. The effect makes the button and ink respond to the pointer; it does not move the operating-system cursor.
