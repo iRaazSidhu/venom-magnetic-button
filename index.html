@@ -3,70 +3,362 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#e9e6df" />
-  <meta name="description" content="A Venom-inspired magnetic button experiment with animated tendrils." />
+  <meta name="theme-color" content="#e7e4dd" />
+  <meta name="description" content="A smoother Venom-inspired magnetic button with animated ink tendrils." />
   <title>Venom Magnetic Button — Interactive Experiment</title>
   <style>
-    :root { color-scheme: light; --paper:#e9e6df; --ink:#08090c; --muted:#77736c; --button-width:292px; --button-height:104px; --ease-out:cubic-bezier(.2,.8,.2,1); }
-    * { box-sizing:border-box; }
-    html,body { width:100%; min-height:100%; margin:0; }
-    body { min-height:100svh; overflow:hidden; background:radial-gradient(ellipse at 50% 45%,rgba(255,255,255,.28),transparent 54%),var(--paper); color:var(--ink); font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; -webkit-font-smoothing:antialiased; }
-    .stage { position:relative; display:grid; place-items:center; width:100%; min-height:100svh; isolation:isolate; overflow:hidden; }
-    .stage::before { content:""; position:absolute; inset:-50%; z-index:-1; pointer-events:none; opacity:.18; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.88' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.23'/%3E%3C/svg%3E"); transform:rotate(-4deg); }
-    .topline { position:absolute; top:clamp(24px,5.5vh,52px); left:50%; width:max-content; max-width:calc(100vw - 32px); transform:translateX(-50%); text-align:center; pointer-events:none; }
-    .eyebrow { margin:0 0 10px; color:#77746d; font:600 10px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:.2em; text-transform:uppercase; }
-    .instruction { margin:0; color:#5e5a54; font-size:12px; letter-spacing:.015em; }
-    .button-wrap { position:absolute; left:50%; top:50%; z-index:2; width:var(--button-width); height:var(--button-height); transform:translate(-50%,-50%); pointer-events:none; }
-    .venom-button { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; width:100%; height:100%; padding:0 27px; overflow:hidden; border:1px solid rgba(255,255,255,.17); border-radius:999px; background:linear-gradient(150deg,rgba(255,255,255,.15) 0%,transparent 26%),linear-gradient(180deg,#17181d 0%,#050609 52%,#101115 100%); box-shadow:0 20px 34px rgba(35,31,26,.18),0 5px 12px rgba(20,18,16,.16),inset 0 1px 1px rgba(255,255,255,.3),inset 0 -2px 4px rgba(0,0,0,.55); color:#f7f7f5; cursor:pointer; pointer-events:auto; transform:translate3d(var(--tx,0px),var(--ty,0px),0) rotate(var(--tilt,0deg)) scale(var(--scale,1)); transform-origin:50% 50%; transition:box-shadow 180ms ease,filter 180ms ease; will-change:transform; -webkit-tap-highlight-color:transparent; }
-    .venom-button::before { content:""; position:absolute; top:-52%; left:14%; width:40%; height:100%; border-radius:50%; background:rgba(255,255,255,.12); filter:blur(18px); transform:rotate(-18deg); pointer-events:none; }
-    .venom-button::after { content:""; position:absolute; inset:1px; border:1px solid rgba(255,255,255,.035); border-radius:inherit; pointer-events:none; }
-    .button-label { position:relative; z-index:3; display:inline-block; color:inherit; font-size:clamp(19px,2.15vw,24px); font-weight:650; letter-spacing:-.055em; line-height:1; white-space:nowrap; text-shadow:0 1px 2px rgba(0,0,0,.24); transition:transform 220ms var(--ease-out),letter-spacing 220ms var(--ease-out); }
-    .venom-button:focus-visible { outline:2px solid #2f333b; outline-offset:7px; }
-    .venom-button:hover { box-shadow:0 24px 38px rgba(28,25,22,.23),0 5px 12px rgba(20,18,16,.16),inset 0 1px 1px rgba(255,255,255,.34); }
-    .venom-button:hover .button-label { letter-spacing:-.045em; }
-    .venom-button.is-caught { filter:contrast(1.08); }
-    .venom-button.is-caught .button-label { transform:scale(.96); }
-    .tendrils { position:absolute; inset:0; z-index:3; width:100%; height:100%; overflow:visible; pointer-events:none; }
-    .tendril-glow { fill:none; stroke:#050609; stroke-linecap:round; stroke-linejoin:round; opacity:0; filter:blur(2px); transition:opacity 180ms ease; }
-    .tendril { fill:none; stroke:#08090c; stroke-linecap:round; stroke-linejoin:round; opacity:0; transition:opacity 180ms ease; }
-    .stage.is-active .tendril { opacity:var(--strand-opacity,.82); }
-    .stage.is-active .tendril-glow { opacity:var(--glow-opacity,.18); }
-    .stage.is-active .venom-button { box-shadow:0 26px 40px rgba(28,25,22,.25),0 5px 12px rgba(20,18,16,.18),inset 0 1px 1px rgba(255,255,255,.32); }
-    .status { position:absolute; bottom:clamp(26px,5.5vh,50px); left:50%; display:inline-flex; align-items:center; gap:8px; transform:translateX(-50%); color:#77736d; font:500 10px/1.3 ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:.12em; text-transform:uppercase; white-space:nowrap; pointer-events:none; }
-    .status-dot { width:5px; height:5px; border-radius:50%; background:#a09b91; transition:background 180ms ease,box-shadow 180ms ease; }
-    .stage.is-active .status-dot { background:#17191d; box-shadow:0 0 0 4px rgba(8,9,12,.09); }
-    .signature { position:absolute; right:24px; bottom:20px; color:rgba(80,76,69,.62); font:500 9px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:.06em; pointer-events:none; }
-    @media (max-width:520px) { :root { --button-width:min(292px,calc(100vw - 56px)); --button-height:88px; } .topline { top:8vh; } .instruction { max-width:280px; margin-inline:auto; line-height:1.5; } .status { bottom:8vh; font-size:9px; letter-spacing:.08em; } .signature { right:14px; bottom:13px; } }
-    @media (hover:none),(pointer:coarse) { .tendril,.tendril-glow { opacity:0!important; } .venom-button { transform:none!important; } }
-    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; transition-duration:.01ms!important; animation-duration:.01ms!important; animation-iteration-count:1!important; } .tendril,.tendril-glow { opacity:0!important; } .venom-button { transform:none!important; } }
+    :root {
+      color-scheme: light;
+      --paper: #e7e4dd;
+      --ink: #07080b;
+      --muted: #77736d;
+      --button-width: 318px;
+      --button-height: 106px;
+    }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; min-height: 100%; margin: 0; }
+    body {
+      min-height: 100svh;
+      overflow: hidden;
+      background: radial-gradient(ellipse at 50% 47%, rgba(255,255,255,.33), transparent 58%), var(--paper);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+    }
+    .stage { position: relative; width: 100%; min-height: 100svh; overflow: hidden; isolation: isolate; }
+    .grain {
+      position: absolute; inset: -35%; z-index: -1; pointer-events: none; opacity: .14;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.86' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.24'/%3E%3C/svg%3E");
+      transform: rotate(-3deg);
+    }
+    .topline {
+      position: absolute; z-index: 1; top: clamp(25px, 5.8vh, 58px); left: 50%;
+      width: max-content; max-width: calc(100vw - 32px); transform: translateX(-50%);
+      text-align: center; pointer-events: none;
+    }
+    .eyebrow {
+      margin: 0 0 11px; color: #77736c; font: 600 10px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: .2em; text-transform: uppercase;
+    }
+    .instruction { margin: 0; color: #5d5952; font-size: 12px; line-height: 1.6; letter-spacing: .015em; }
+    .button-wrap {
+      position: absolute; left: 50%; top: 50%; z-index: 2; width: var(--button-width); height: var(--button-height);
+      transform: translate(-50%, -50%); pointer-events: none;
+    }
+    .venom-button {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      width: 100%; height: 100%; padding: 0 26px; overflow: hidden; border: 1px solid rgba(255,255,255,.18);
+      border-radius: 999px; background:
+        radial-gradient(ellipse at 22% 8%, rgba(255,255,255,.24), transparent 30%),
+        linear-gradient(158deg, rgba(255,255,255,.12) 0%, transparent 30%),
+        linear-gradient(180deg, #17181d 0%, #050609 52%, #111217 100%);
+      box-shadow: 0 25px 40px rgba(37,32,26,.2), 0 6px 13px rgba(20,18,16,.13),
+        inset 0 1px 1px rgba(255,255,255,.3), inset 0 -2px 5px rgba(0,0,0,.58);
+      color: #f6f6f4; cursor: pointer; pointer-events: auto; transform-origin: 50% 50%; will-change: transform;
+      -webkit-tap-highlight-color: transparent; isolation: isolate;
+    }
+    .venom-button::before {
+      content: ""; position: absolute; pointer-events: none; inset: 1px; border-radius: inherit;
+      background: linear-gradient(180deg, rgba(255,255,255,.075), transparent 24%, transparent 80%, rgba(255,255,255,.018));
+    }
+    .venom-button::after {
+      content: ""; position: absolute; left: 10%; right: 10%; top: -65%; height: 105%; border-radius: 50%;
+      background: rgba(255,255,255,.08); filter: blur(21px); pointer-events: none;
+    }
+    .button-label {
+      position: relative; z-index: 1; display: inline-block; color: inherit; font-size: clamp(20px, 2.25vw, 25px);
+      font-weight: 650; letter-spacing: -.055em; line-height: 1; white-space: nowrap; text-shadow: 0 1px 2px rgba(0,0,0,.24);
+      pointer-events: none;
+    }
+    .venom-button:focus-visible { outline: 2px solid #2f333b; outline-offset: 8px; }
+    .venom-button.is-pressed { box-shadow: 0 12px 22px rgba(37,32,26,.2), inset 0 2px 7px rgba(0,0,0,.6), inset 0 1px 1px rgba(255,255,255,.22); }
+    .tendrils {
+      position: absolute; inset: 0; z-index: 3; width: 100%; height: 100%; overflow: visible;
+      pointer-events: none; contain: layout style paint;
+    }
+    .tendril, .tendril-hair, .tendril-halo { fill: none; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+    .tendril { stroke: url(#inkGradient); opacity: 0; }
+    .tendril-hair { stroke: #090a0d; opacity: 0; }
+    .tendril-halo { stroke: #090a0d; opacity: 0; filter: blur(2.6px); }
+    .status {
+      position: absolute; z-index: 1; bottom: clamp(28px, 6vh, 58px); left: 50%; display: inline-flex; align-items: center;
+      gap: 9px; transform: translateX(-50%); color: #77736d; font: 500 10px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; pointer-events: none;
+    }
+    .status-dot { width: 5px; height: 5px; border-radius: 50%; background: #a09b91; transition: background .2s ease, box-shadow .2s ease; }
+    .stage.is-active .status-dot { background: #17191d; box-shadow: 0 0 0 4px rgba(8,9,12,.09); }
+    .signature {
+      position: absolute; z-index: 1; right: 22px; bottom: 19px; color: rgba(80,76,69,.57);
+      font: 500 9px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .06em; pointer-events: none;
+    }
+    @media (max-width: 520px) {
+      :root { --button-width: min(318px, calc(100vw - 44px)); --button-height: 90px; }
+      .topline { top: 8vh; } .instruction { max-width: 280px; margin-inline: auto; }
+      .status { bottom: 8vh; font-size: 9px; letter-spacing: .08em; } .signature { right: 12px; bottom: 12px; font-size: 8px; }
+    }
+    @media (hover: none), (pointer: coarse) {
+      .tendrils { display: none; } .venom-button { transform: none !important; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+      .tendrils { display: none; } .venom-button { transform: none !important; }
+    }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js" integrity="sha384-XmJ9SoHtVOHoQUcKvFAzVXwdkKo1Ie3bhmSoIAkcdsHGaIrVJIkmozyq0FJeb/Ly" crossorigin="anonymous"></script>
 </head>
 <body>
   <main class="stage" id="stage" aria-label="Venom magnetic button interactive demo">
-    <header class="topline"><p class="eyebrow">Interactive experiment / 001</p><p class="instruction">Move your cursor close. Let it get caught.</p></header>
-    <div class="button-wrap" id="buttonWrap"><button class="venom-button" id="venomButton" type="button" aria-label="Let's collaborate — Venom magnetic button demo"><span class="button-label" id="buttonLabel">let’s collaborate</span></button></div>
-    <svg class="tendrils" id="tendrils" aria-hidden="true" focusable="false"><g id="glowGroup"></g><g id="strandGroup"></g></svg>
+    <div class="grain" aria-hidden="true"></div>
+    <header class="topline">
+      <p class="eyebrow">Interactive experiment / 002</p>
+      <p class="instruction">Move anywhere near the button.<br />Watch it reach back.</p>
+    </header>
+    <div class="button-wrap" id="buttonWrap">
+      <button class="venom-button" id="venomButton" type="button" aria-label="Let's collaborate — magnetic button demo">
+        <span class="button-label">let’s collaborate</span>
+      </button>
+    </div>
+    <svg class="tendrils" id="tendrils" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="inkGradient" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#050609" />
+          <stop offset=".48" stop-color="#111217" />
+          <stop offset="1" stop-color="#020306" />
+        </linearGradient>
+      </defs>
+      <g id="haloGroup"></g><g id="hairGroup"></g><g id="strandGroup"></g>
+    </svg>
     <div class="status" aria-live="polite"><span class="status-dot"></span><span id="statusText">Magnetic field · standby</span></div>
-    <span class="signature">VMB—001 / NO EXTERNAL LIBRARIES</span>
+    <span class="signature">VMB—002 / GSAP + SVG</span>
   </main>
   <script>
     (() => {
       'use strict';
-      const stage=document.getElementById('stage'),button=document.getElementById('venomButton'),buttonWrap=document.getElementById('buttonWrap'),label=document.getElementById('buttonLabel'),svg=document.getElementById('tendrils'),glowGroup=document.getElementById('glowGroup'),strandGroup=document.getElementById('strandGroup'),statusText=document.getElementById('statusText');
-      const finePointer=window.matchMedia('(hover: hover) and (pointer: fine)'),reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)'),STRAND_COUNT=13,MAGNETIC_RADIUS=230,MAX_PULL=29;
-      const clamp=(v,min,max)=>Math.max(min,Math.min(max,v)),lerp=(a,b,n)=>a+(b-a)*n;
-      let width=window.innerWidth,height=window.innerHeight,pointer={x:width/2-300,y:height/2+100,seen:false},current={x:0,y:0,tilt:0,scale:1},active=false,caughtTimer=0;
-      const pathPairs=[];
-      function makePath(group,className,widthValue,index){const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('class',className);path.setAttribute('stroke-width',widthValue);path.style.setProperty('--strand-opacity',(0.52+(index%4)*0.12).toFixed(2));path.style.setProperty('--glow-opacity',(0.08+(index%3)*0.06).toFixed(2));group.appendChild(path);return path;}
-      for(let i=0;i<STRAND_COUNT;i++)pathPairs.push({glow:makePath(glowGroup,'tendril-glow',i%4===0?5.2:3.2,i),core:makePath(strandGroup,'tendril',i%5===0?2.15:(i%3===0?1.45:0.9),i),seed:i*1.71+.4,fan:(i-(STRAND_COUNT-1)/2)/((STRAND_COUNT-1)/2),length:.72+((i*7)%5)*.075});
-      function resize(){width=window.innerWidth;height=window.innerHeight;svg.setAttribute('viewBox',`0 0 ${width} ${height}`);svg.setAttribute('width',width);svg.setAttribute('height',height);}
-      function pathFor(sx,sy,ex,ey,fan,seed,time,strength,idx){const dx=ex-sx,dy=ey-sy,distance=Math.hypot(dx,dy)||1,nx=-dy/distance,ny=dx/distance,wave=Math.sin(time*.0021+seed)*(5+15*strength),wave2=Math.cos(time*.0017+seed*1.3)*(4+10*strength),fanOffset=fan*(7+strength*15),c1x=sx+dx*.23+nx*(fanOffset+wave)+Math.cos(seed+time*.001)*5,c1y=sy+dy*.23+ny*(fanOffset+wave)+Math.sin(seed+time*.001)*4,c2x=sx+dx*.70+nx*(fanOffset*1.5+wave2)+Math.sin(seed*1.7+time*.0014)*8,c2y=sy+dy*.70+ny*(fanOffset*1.5+wave2)+Math.cos(seed*1.4+time*.0014)*7,endJitter=1+(idx%3)*.7,endX=ex+nx*fan*endJitter,endY=ey+ny*fan*endJitter;return `M ${sx.toFixed(2)} ${sy.toFixed(2)} C ${c1x.toFixed(2)} ${c1y.toFixed(2)}, ${c2x.toFixed(2)} ${c2y.toFixed(2)}, ${endX.toFixed(2)} ${endY.toFixed(2)}`;}
-      function updatePaths(now,strength,centerX,centerY,buttonW,buttonH){const near=pointer.seen&&strength>.015&&!reducedMotion.matches&&finePointer.matches;let targetX,targetY;if(near){targetX=pointer.x;targetY=pointer.y;}else{targetX=centerX-48+Math.sin(now*.0012)*8;targetY=centerY+buttonH*.5+76+Math.cos(now*.0018)*11;}const angle=Math.atan2(targetY-centerY,targetX-centerX),rx=buttonW*.48,ry=buttonH*.43,anchorX=centerX+Math.cos(angle)*rx,anchorY=centerY+Math.sin(angle)*ry,countStrength=near?strength:.22;pathPairs.forEach((pair,i)=>{const startOffset=pair.fan*(near?10+strength*13:15),sx=anchorX+Math.cos(angle+Math.PI/2)*startOffset,sy=anchorY+Math.sin(angle+Math.PI/2)*startOffset,pullX=near?targetX:targetX+pair.fan*15,pullY=near?targetY:targetY+pair.fan*10,endX=lerp(sx,pullX,pair.length),endY=lerp(sy,pullY,pair.length),path=pathFor(sx,sy,endX,endY,pair.fan,pair.seed,now,countStrength,i);pair.glow.setAttribute('d',path);pair.core.setAttribute('d',path);});if(near){stage.classList.add('is-active');if(!active)statusText.textContent='Magnetic field · engaged';active=true;}else{stage.classList.remove('is-active');if(active)statusText.textContent='Magnetic field · standby';active=false;}}
-      function tick(now){const baseX=width/2,baseY=height/2,rect=button.getBoundingClientRect(),bw=rect.width||292,bh=rect.height||104,dist=pointer.seen?Math.hypot(pointer.x-baseX,pointer.y-baseY):Infinity,field=pointer.seen&&finePointer.matches&&!reducedMotion.matches?clamp(1-dist/MAGNETIC_RADIUS,0,1):0,force=field*field,dx=pointer.x-baseX,dy=pointer.y-baseY,targetX=clamp(dx*.27*force,-MAX_PULL,MAX_PULL),targetY=clamp(dy*.25*force,-MAX_PULL*.8,MAX_PULL*.8),targetTilt=clamp(dx*.018*force,-5,5),targetScale=1+force*.018,smoothing=reducedMotion.matches?1:.13;current.x=lerp(current.x,targetX,smoothing);current.y=lerp(current.y,targetY,smoothing);current.tilt=lerp(current.tilt,targetTilt,smoothing);current.scale=lerp(current.scale,targetScale,smoothing);button.style.setProperty('--tx',`${current.x.toFixed(2)}px`);button.style.setProperty('--ty',`${current.y.toFixed(2)}px`);button.style.setProperty('--tilt',`${current.tilt.toFixed(2)}deg`);button.style.setProperty('--scale',current.scale.toFixed(3));updatePaths(now,field,baseX+current.x,baseY+current.y,bw,bh);requestAnimationFrame(tick);}
-      stage.addEventListener('pointermove',event=>{if(event.pointerType==='touch')return;const bounds=stage.getBoundingClientRect();pointer.x=event.clientX-bounds.left;pointer.y=event.clientY-bounds.top;pointer.seen=true;},{passive:true});
-      stage.addEventListener('pointerleave',()=>{pointer.seen=false;});
-      button.addEventListener('click',()=>{button.classList.add('is-caught');label.textContent='gotcha.';statusText.textContent='Capture successful';window.clearTimeout(caughtTimer);caughtTimer=window.setTimeout(()=>{button.classList.remove('is-caught');label.textContent='let’s collaborate';statusText.textContent=active?'Magnetic field · engaged':'Magnetic field · standby';},1050);});
-      window.addEventListener('resize',resize,{passive:true});resize();requestAnimationFrame(tick);
+      const stage = document.getElementById('stage');
+      const button = document.getElementById('venomButton');
+      const svg = document.getElementById('tendrils');
+      const haloGroup = document.getElementById('haloGroup');
+      const hairGroup = document.getElementById('hairGroup');
+      const strandGroup = document.getElementById('strandGroup');
+      const statusText = document.getElementById('statusText');
+      const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const CONFIG = {
+        fieldRadius: 740,
+        maxPullX: 58,
+        maxPullY: 44,
+        pullX: 0.15,
+        pullY: 0.135,
+        strandCount: 19,
+        hairCount: 12,
+        fieldFade: 0.26
+      };
+      const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+      const smoothstep = v => { const x = clamp(v, 0, 1); return x * x * (3 - 2 * x); };
+      const ns = 'http://www.w3.org/2000/svg';
+      const pointer = { x: innerWidth / 2, y: innerHeight / 2, lastX: innerWidth / 2, lastY: innerHeight / 2, time: 0, vx: 0, vy: 0, seen: false, inside: false };
+      const cursorTrack = { x: pointer.x, y: pointer.y };
+      const motion = { x: 0, y: 0, rotation: 0, scale: 1, field: 0 };
+      let viewportWidth = innerWidth;
+      let viewportHeight = innerHeight;
+      let active = false;
+      let pressTween = null;
+      let renderCount = 0;
+      const makePath = (group, className, width, opacity, index) => {
+        const path = document.createElementNS(ns, 'path');
+        path.setAttribute('class', className);
+        path.setAttribute('stroke-width', width);
+        path.dataset.baseOpacity = opacity;
+        path.dataset.index = index;
+        group.appendChild(path);
+        return path;
+      };
+      const tendrils = Array.from({ length: CONFIG.strandCount }, (_, i) => ({
+        core: makePath(strandGroup, 'tendril', i % 5 === 0 ? 2.35 : (i % 3 === 0 ? 1.55 : 1.0), 0.62 + (i % 4) * 0.1, i),
+        halo: makePath(haloGroup, 'tendril-halo', i % 4 === 0 ? 5.2 : 3.1, 0.07 + (i % 3) * 0.025, i),
+        fan: (i - (CONFIG.strandCount - 1) / 2) / ((CONFIG.strandCount - 1) / 2),
+        seed: i * 1.618 + .4,
+        length: .78 + (i % 5) * .045
+      }));
+      const hairs = Array.from({ length: CONFIG.hairCount }, (_, i) => ({
+        path: makePath(hairGroup, 'tendril-hair', i % 4 === 0 ? 1.15 : .68, .2 + (i % 3) * .065, i),
+        fan: (i - (CONFIG.hairCount - 1) / 2) / ((CONFIG.hairCount - 1) / 2),
+        seed: i * 2.17 + .8
+      }));
+      const gsapReady = Boolean(window.gsap && typeof window.gsap.quickTo === 'function');
+      if (!gsapReady) {
+        statusText.textContent = 'Animation library unavailable';
+        return;
+      }
+      const gsap = window.gsap;
+      gsap.defaults({ overwrite: 'auto' });
+      gsap.set(button, { x: 0, y: 0, rotation: 0, scale: 1, force3D: true });
+      const xTo = gsap.quickTo(button, 'x', { duration: .42, ease: 'power3.out' });
+      const yTo = gsap.quickTo(button, 'y', { duration: .42, ease: 'power3.out' });
+      const rotationTo = gsap.quickTo(button, 'rotation', { duration: .48, ease: 'power3.out' });
+      const scaleTo = gsap.quickTo(button, 'scale', { duration: .34, ease: 'power3.out' });
+      const fieldTo = gsap.quickTo(motion, 'field', { duration: CONFIG.fieldFade, ease: 'power2.out' });
+      const cursorXTo = gsap.quickTo(cursorTrack, 'x', { duration: .105, ease: 'power2.out' });
+      const cursorYTo = gsap.quickTo(cursorTrack, 'y', { duration: .105, ease: 'power2.out' });
+      function setFieldClass(nextActive) {
+        if (active === nextActive) return;
+        active = nextActive;
+        stage.classList.toggle('is-active', active);
+        statusText.textContent = active ? 'Magnetic field · engaged' : 'Magnetic field · standby';
+      }
+      function setSize() {
+        viewportWidth = window.innerWidth;
+        viewportHeight = window.innerHeight;
+        svg.setAttribute('viewBox', `0 0 ${viewportWidth} ${viewportHeight}`);
+        svg.setAttribute('width', viewportWidth);
+        svg.setAttribute('height', viewportHeight);
+        if (pointer.seen) updateFromPointer(pointer.x, pointer.y, performance.now(), true);
+      }
+      function updateFromPointer(x, y, now, force = false) {
+        const dx = x - viewportWidth / 2;
+        const dy = y - viewportHeight / 2;
+        const distance = Math.hypot(dx, dy);
+        const normalizedReach = clamp(1 - distance / CONFIG.fieldRadius, 0, 1);
+        // A power curve keeps a useful pull over a larger area, without a hard radius edge.
+        const field = Math.pow(normalizedReach, .66);
+        const targetX = clamp(dx * CONFIG.pullX * field, -CONFIG.maxPullX, CONFIG.maxPullX);
+        const targetY = clamp(dy * CONFIG.pullY * field, -CONFIG.maxPullY, CONFIG.maxPullY);
+        const targetRotation = clamp(dx * .012 * field, -4.8, 4.8);
+        const targetScale = 1 + field * .022;
+        xTo(reduceMotion.matches ? 0 : targetX);
+        yTo(reduceMotion.matches ? 0 : targetY);
+        rotationTo(reduceMotion.matches ? 0 : targetRotation);
+        scaleTo(reduceMotion.matches ? 1 : targetScale);
+        fieldTo(reduceMotion.matches || !finePointer.matches ? 0 : field);
+        if (now && pointer.time && !force) {
+          const dt = Math.max(8, now - pointer.time);
+          const rawVX = clamp((x - pointer.lastX) / dt, -2.8, 2.8);
+          const rawVY = clamp((y - pointer.lastY) / dt, -2.8, 2.8);
+          pointer.vx += (rawVX - pointer.vx) * .33;
+          pointer.vy += (rawVY - pointer.vy) * .33;
+        }
+        pointer.lastX = x;
+        pointer.lastY = y;
+        pointer.time = now || performance.now();
+        if (!pointer.seen) {
+          // On first entry, anchor the endpoint at the real pointer immediately; don't sweep in from page center.
+          gsap.set(cursorTrack, { x, y });
+          pointer.seen = true;
+        } else {
+          cursorXTo(x);
+          cursorYTo(y);
+        }
+        pointer.x = x;
+        pointer.y = y;
+        const nextActive = field > .075 && finePointer.matches && !reduceMotion.matches;
+        setFieldClass(nextActive);
+      }
+      function onPointerMove(event) {
+        if (event.pointerType === 'touch') return;
+        pointer.inside = true;
+        updateFromPointer(event.clientX, event.clientY, performance.now());
+      }
+      function releasePointer() {
+        pointer.inside = false;
+        pointer.seen = false;
+        pointer.vx *= .25;
+        pointer.vy *= .25;
+        xTo(0); yTo(0); rotationTo(0); scaleTo(1); fieldTo(0);
+        setFieldClass(false);
+        // Keep the last real cursor coordinates while the filaments retract and fade.
+        // Never redirect them to an arbitrary fallback point below the button.
+      }
+      function endpointFromEllipse(cx, cy, rx, ry, ux, uy) {
+        const denom = Math.sqrt((ux * ux) / (rx * rx) + (uy * uy) / (ry * ry)) || 1;
+        return { x: cx + ux / denom, y: cy + uy / denom };
+      }
+      function curvePath(sx, sy, ex, ey, fan, seed, time, field, velocityX, velocityY, index) {
+        const dx = ex - sx; const dy = ey - sy;
+        const distance = Math.hypot(dx, dy) || 1;
+        const nx = -dy / distance; const ny = dx / distance;
+        const tangentOffset = fan * (7 + field * 18);
+        const sway = Math.sin(time * .0018 + seed) * (2.5 + field * 14);
+        const twitch = Math.cos(time * .00125 + seed * 1.37) * (2 + field * 9);
+        const speedBend = clamp(Math.hypot(velocityX, velocityY) * 18, 0, 36);
+        const dirX = dx / distance; const dirY = dy / distance;
+        const c1x = sx + dx * .24 + nx * (tangentOffset + sway) - velocityX * speedBend * .28;
+        const c1y = sy + dy * .24 + ny * (tangentOffset + sway) - velocityY * speedBend * .28;
+        const c2x = sx + dx * .71 + nx * (tangentOffset * 1.7 + twitch) - velocityX * speedBend * .7;
+        const c2y = sy + dy * .71 + ny * (tangentOffset * 1.7 + twitch) - velocityY * speedBend * .7;
+        const endWobble = Math.sin(time * .0015 + seed * 2.1) * (1.2 + field * 4.8);
+        const endX = ex + nx * (fan * (4 + field * 14) + endWobble) + dirX * Math.cos(seed + time * .0018) * field * 2;
+        const endY = ey + ny * (fan * (4 + field * 14) + endWobble) + dirY * Math.cos(seed + time * .0018) * field * 2;
+        return `M ${sx.toFixed(2)} ${sy.toFixed(2)} C ${c1x.toFixed(2)} ${c1y.toFixed(2)}, ${c2x.toFixed(2)} ${c2y.toFixed(2)}, ${endX.toFixed(2)} ${endY.toFixed(2)}`;
+      }
+      function render(time) {
+        renderCount += 1;
+        const field = clamp(motion.field, 0, 1);
+        // Don't render moving tendrils on touch screens, reduced-motion mode, or when fully released.
+        if (!finePointer.matches || reduceMotion.matches || field < .004) {
+          if (field < .004) {
+            for (const item of tendrils) { item.core.style.opacity = '0'; item.halo.style.opacity = '0'; }
+            for (const item of hairs) item.path.style.opacity = '0';
+          }
+          return;
+        }
+        const buttonX = Number(gsap.getProperty(button, 'x')) || 0;
+        const buttonY = Number(gsap.getProperty(button, 'y')) || 0;
+        const buttonRect = button.getBoundingClientRect();
+        const cx = viewportWidth / 2 + buttonX;
+        const cy = viewportHeight / 2 + buttonY;
+        const bw = buttonRect.width || 318;
+        const bh = buttonRect.height || 106;
+        const tx = cursorTrack.x;
+        const ty = cursorTrack.y;
+        const dx = tx - cx; const dy = ty - cy;
+        const angle = Math.atan2(dy, dx);
+        const ux = Math.cos(angle); const uy = Math.sin(angle);
+        const tangentX = -uy; const tangentY = ux;
+        const edge = endpointFromEllipse(cx, cy, bw * .49, bh * .47, ux, uy);
+        const velocityX = clamp(pointer.vx, -2.2, 2.2);
+        const velocityY = clamp(pointer.vy, -2.2, 2.2);
+        const startTime = time * 1000;
+        tendrils.forEach((item, index) => {
+          const startFan = item.fan * (8 + field * 27);
+          const sx = edge.x + tangentX * startFan;
+          const sy = edge.y + tangentY * startFan;
+          const targetOffset = item.fan * (2 + field * 18);
+          const ex = tx + tangentX * targetOffset;
+          const ey = ty + tangentY * targetOffset;
+          const d = curvePath(sx, sy, ex, ey, item.fan, item.seed, startTime, field, velocityX, velocityY, index);
+          const op = clamp(field * Number(item.core.dataset.baseOpacity), 0, .92);
+          item.core.setAttribute('d', d); item.halo.setAttribute('d', d);
+          item.core.style.opacity = op.toFixed(3);
+          item.halo.style.opacity = (field * Number(item.halo.dataset.baseOpacity)).toFixed(3);
+        });
+        hairs.forEach((item, index) => {
+          const spread = item.fan * (13 + field * 35);
+          const sx = edge.x + tangentX * spread;
+          const sy = edge.y + tangentY * spread;
+          const ex = tx + tangentX * item.fan * (8 + field * 22);
+          const ey = ty + tangentY * item.fan * (8 + field * 22);
+          const d = curvePath(sx, sy, ex, ey, item.fan * 1.3, item.seed, startTime + 31, field, velocityX * .65, velocityY * .65, index + 31);
+          item.path.setAttribute('d', d);
+          item.path.style.opacity = (field * Number(item.path.dataset.baseOpacity)).toFixed(3);
+        });
+      }
+      function handleMotionPreference() {
+        if (reduceMotion.matches || !finePointer.matches) releasePointer();
+        else if (pointer.inside) updateFromPointer(pointer.x, pointer.y, performance.now(), true);
+      }
+      window.addEventListener('pointermove', onPointerMove, { passive: true });
+      window.addEventListener('pointerleave', releasePointer, { passive: true });
+      window.addEventListener('blur', releasePointer);
+      window.addEventListener('resize', setSize, { passive: true });
+      if (finePointer.addEventListener) finePointer.addEventListener('change', handleMotionPreference);
+      if (reduceMotion.addEventListener) reduceMotion.addEventListener('change', handleMotionPreference);
+      button.addEventListener('pointerdown', () => {
+        if (pressTween) pressTween.kill();
+        pressTween = gsap.to(button, { scale: Math.max(.96, (Number(gsap.getProperty(button, 'scale')) || 1) * .97), duration: .12, yoyo: true, repeat: 1, ease: 'power2.out' });
+      });
+      gsap.ticker.add(render);
+      setSize();
     })();
   </script>
 </body>
